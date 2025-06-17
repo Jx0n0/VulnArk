@@ -10,6 +10,7 @@
               <el-radio-button label="pending">待处理</el-radio-button>
               <el-radio-button label="accepted">已接受</el-radio-button>
               <el-radio-button label="fixed">已修复</el-radio-button>
+              <el-radio-button label="pending_retest">待复测</el-radio-button>
               <el-radio-button label="rejected">已拒绝</el-radio-button>
               <el-radio-button label="closed">已关闭</el-radio-button>
             </el-radio-group>
@@ -114,6 +115,16 @@
               plain
             >
               标记已修复
+            </el-button>
+            
+            <el-button
+              v-if="scope.row.status === 'fixed'"
+              size="small"
+              type="success"
+              @click="handleUpdateStatus(scope.row, 'pending_retest')"
+              plain
+            >
+              申请复测
             </el-button>
           </template>
         </el-table-column>
@@ -229,6 +240,20 @@
               >
                 <el-icon><SuccessFilled /></el-icon>
                 <span>标记为已修复</span>
+              </el-button>
+            </div>
+          </div>
+          
+          <div v-if="currentAssignment.status === 'fixed'" class="action-section">
+            <h4>申请复测</h4>
+            <div class="action-buttons">
+              <el-button 
+                type="success" 
+                @click="showResponseDialog('pending_retest')"
+                class="action-btn"
+              >
+                <el-icon><Check /></el-icon>
+                <span>申请复测</span>
               </el-button>
             </div>
           </div>
@@ -422,7 +447,8 @@ export default {
       const placeholders = {
         'accepted': '接受任务的备注信息，例如预计完成时间等',
         'rejected': '拒绝任务的原因',
-        'fixed': '修复的具体方法和过程描述'
+        'fixed': '修复的具体方法和过程描述',
+        'pending_retest': '申请复测的说明，如修复内容确认和测试建议等'
       }
       return placeholders[status] || '请输入处理备注'
     }
@@ -455,7 +481,8 @@ export default {
         'accepted': 'success',
         'rejected': 'danger',
         'fixed': 'primary',
-        'closed': 'warning'
+        'pending_retest': 'warning',
+        'closed': 'info'
       }
       return types[status] || 'info'
     }
@@ -467,6 +494,7 @@ export default {
         'accepted': '已接受',
         'rejected': '已拒绝',
         'fixed': '已修复',
+        'pending_retest': '待复测',
         'closed': '已关闭'
       }
       return texts[status] || '未知状态'
